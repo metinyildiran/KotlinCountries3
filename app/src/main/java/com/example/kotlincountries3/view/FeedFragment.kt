@@ -1,6 +1,5 @@
 package com.example.kotlincountries3.view
 
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -40,14 +39,37 @@ class FeedFragment : Fragment() {
         countryList.layoutManager = LinearLayoutManager(context)
         countryList.adapter = countryAdapter
 
+        observeLiveData()
     }
 
     fun observeLiveData() {
-        viewModel.countries.observe(this, Observer {
+        viewModel.countries.observe(viewLifecycleOwner, Observer {
             it?.let {
                 countryList.visibility = View.VISIBLE
                 countryAdapter.updateCountryList(it)
 
+            }
+        })
+
+        viewModel.countryError.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it) {
+                    countryError.visibility = View.VISIBLE
+                } else {
+                    countryError.visibility = View.GONE
+                }
+            }
+        })
+
+        viewModel.countryLoading.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                if (it) {
+                    countryLoading.visibility = View.VISIBLE
+                    countryList.visibility = View.GONE
+                    countryError.visibility = View.GONE
+                } else {
+                    countryLoading.visibility = View.GONE
+                }
             }
         })
     }
