@@ -26,6 +26,6 @@ data class Country(
     @SerializedName("flag")
     val imageUrl: String?
 ) {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     var uuid: Int = 0
 }
