@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.kotlincountries3.R
+import com.example.kotlincountries3.util.downloadFromUrl
+import com.example.kotlincountries3.util.placeholderProgressBar
 import com.example.kotlincountries3.viewmodel.CountryViewModel
 import kotlinx.android.synthetic.main.fragment_country.*
 
@@ -32,24 +34,29 @@ class CountryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        arguments?.let {
+            countryUuid = CountryFragmentArgs.fromBundle(it).countryUuid
+        }
+
         viewModel = ViewModelProviders.of(this).get(CountryViewModel::class.java)
-        viewModel.getDataFromRoom()
+        viewModel.getDataFromRoom(countryUuid)
 
         observeLiveData()
 
-        arguments?.let {
-            CountryFragmentArgs.fromBundle(it).countryUuid
-        }
+
     }
 
     private fun observeLiveData() {
-        viewModel.countryLiveData.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                countryName.text = it.countryName
-                countryCapital.text = it.countryCapital
-                countryRegion.text = it.countryRegion
-                countryCurrency.text = it.countryCurrency
-                countryLanguage.text = it.countryLanguage
+        viewModel.countryLiveData.observe(viewLifecycleOwner, Observer { country ->
+            country?.let {
+                countryName.text = country.countryName
+                countryCapital.text = country.countryCapital
+                countryRegion.text = country.countryRegion
+                countryCurrency.text = country.countryCurrency
+                countryLanguage.text = country.countryLanguage
+                context?.let {
+                    countryImage.downloadFromUrl(country.imageUrl, placeholderProgressBar(it))
+                }
             }
         })
     }
