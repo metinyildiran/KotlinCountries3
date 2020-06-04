@@ -9,13 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kotlincountries3.R
 import com.example.kotlincountries3.databinding.ItemCountryBinding
 import com.example.kotlincountries3.model.Country
-import com.example.kotlincountries3.util.downloadFromUrl
-import com.example.kotlincountries3.util.placeholderProgressBar
 import com.example.kotlincountries3.view.FeedFragmentDirections
 import kotlinx.android.synthetic.main.item_country.view.*
 
-class CountryAdapter(val countryList: ArrayList<Country>) :
-    RecyclerView.Adapter<CountryAdapter.CountryViewHolder>() {
+class CountryAdapter(val countryList: ArrayList<Country>) : RecyclerView.Adapter<CountryAdapter.CountryViewHolder>(), CountryClickListener {
 
     class CountryViewHolder(var view: ItemCountryBinding) : RecyclerView.ViewHolder(view.root) {
 
@@ -35,6 +32,7 @@ class CountryAdapter(val countryList: ArrayList<Country>) :
     override fun onBindViewHolder(holder: CountryViewHolder, position: Int) {
 
         holder.view.country = countryList[position]
+        holder.view.listener = this
 
         /*
         holder.view.name.text = countryList[position].countryName
@@ -53,5 +51,10 @@ class CountryAdapter(val countryList: ArrayList<Country>) :
         countryList.clear()
         countryList.addAll(newCountryList)
         notifyDataSetChanged()
+    }
+
+    override fun onCountryClicked(v: View) {
+        val action = FeedFragmentDirections.actionFeedFragmentToCountryFragment(v.countryUuidText.text.toString().toInt())
+        Navigation.findNavController(v).navigate(action)
     }
 }
